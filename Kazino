@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1000XBEK.UZ DEMO ADMIN</title>
+<style>
+*{box-sizing:border-box;font-family:Segoe UI,Arial;margin:0;padding:0;}
+body{min-height:100vh;background:linear-gradient(135deg,#6366f1,#06b6d4);display:flex;flex-direction:column;align-items:center;padding:20px;}
+.card{background:#fff;width:100%;max-width:500px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:20px;margin-bottom:20px;}
+h2{text-align:center;margin-bottom:15px;}
+input,button{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;font-size:15px;}
+input{border:1px solid #ccc;outline:none;}
+input:focus{border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,.2);}
+button{border:none;background:#6366f1;color:#fff;font-weight:600;cursor:pointer;}
+button:hover{background:#4f46e5;}
+.link{text-align:center;font-size:14px;margin-bottom:10px;}
+.link a{color:#6366f5;cursor:pointer;font-weight:600;}
+.hidden{display:none;}
+.tabs{position:fixed;bottom:0;left:0;width:100%;display:flex;background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.2);}
+.tabs button{flex:1;padding:15px;font-weight:600;border:none;background:#f1f5f9;cursor:pointer;}
+.tabs button.active{background:#6366f1;color:#fff;}
+.tab-content{width:100%;max-width:500px;}
+.section{padding:10px;margin-bottom:20px;border-radius:10px;background:#f9fafb;}
+.game-card,.smm-card{padding:10px;margin-bottom:10px;border-radius:10px;background:#e0e7ff;cursor:pointer;transition:0.3s;display:flex;align-items:center;}
+.game-card img{width:60px;height:60px;margin-right:10px;border-radius:10px;}
+.game-card:hover,.smm-card:hover{background:#c7d2fe;}
+img.pul{width:80px;margin:5px;border-radius:10px;}
+#slotResult{margin-top:10px;text-align:center;font-size:18px;font-weight:600;}
+@keyframes spin {0%{transform:translateY(0);}100%{transform:translateY(-300px);}}
+.slot{height:60px;overflow:hidden;background:#fff;border-radius:10px;margin-bottom:10px;}
+.slot img{display:block;width:60px;height:60px;margin:0 auto;animation:spin 1s ease-in-out;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+<h2>KIRISH</h2>
+<input id="loginEmail" type="email" placeholder="Gmail">
+<input id="loginPassword" type="password" placeholder="Parol">
+<button id="loginBtn">Kirish</button>
+<div class="link"><a id="toRegister">Ro'yxatdan o'tish</a></div>
+</div>
+
+<!-- REGISTER -->
+<div class="card hidden" id="registerCard">
+<h2>RO‘YXATDAN O‘TISH</h2>
+<input id="regName" type="text" placeholder="Ism">
+<input id="regSurname" type="text" placeholder="Familiya">
+<input id="regPhone" type="tel" placeholder="Telefon">
+<input id="regEmail" type="email" placeholder="Gmail">
+<input id="regPassword" type="password" placeholder="Parol">
+<button id="regBtn">Ro'yxatdan o'tish</button>
+<div class="link"><a id="toLogin">Kirish</a></div>
+</div>
+
+<!-- USER PANEL -->
+<div class="tab-content hidden" id="userPanel">
+<h2>Salom, <span id="userName"></span></h2>
+
+<!-- Game Tab -->
+<div class="section" id="gameTab">
+<h3>Game Bo'limi (Animatsiya)</h3>
+<div class="game-card" onclick="playAnimatedGame('Baraban')">
+<img src="https://cdn.pixabay.com/photo/2013/07/12/12/15/slot-machine-146090_1280.png" alt="Baraban">
+<div>Baraban (4000 so'm)</div>
+</div>
+<div class="game-card" onclick="playAnimatedGame('Carta')">
+<img src="https://cdn.pixabay.com/photo/2017/05/10/13/43/cards-2306220_1280.png" alt="Carta">
+<div>Carta (4000 so'm)</div>
+</div>
+<div class="game-card" onclick="playAnimatedGame('Varat')">
+<img src="https://cdn.pixabay.com/photo/2014/04/03/10/32/goal-312598_1280.png" alt="Varat">
+<div>Varatga Gol urish (4000 so'm)</div>
+</div>
+<div id="slotResult"></div>
+</div>
+
+<!-- Qoidalar Tab -->
+<div class="section hidden" id="rulesTab">
+<h3>Qoidalar (Kazino)</h3>
+<p>1. Har bir o‘yin 4000 so‘mdan boshlanadi.</p>
+<p>2. Maksimal yutuq 20000 so‘m, minimal 1000 so‘m.</p>
+<p>3. O‘yinlar tasodifiy ishlaydi, foydalanuvchi riskni o‘z zimmasiga oladi.</p>
+<p>4. Chiqarish minimal 20000 so‘m.</p>
+<p>5. Har bir yutuq admin tomonidan tasdiqlanadi.</p>
+<div>
+<img class="pul" src="https://cdn.pixabay.com/photo/2016/12/13/17/11/money-1908665_1280.png" alt="pul1">
+<img class="pul" src="https://cdn.pixabay.com/photo/2016/12/13/17/11/money-1908666_1280.png" alt="pul2">
+<img class="pul" src="https://cdn.pixabay.com/photo/2016/12/13/17/11/money-1908667_1280.png" alt="pul3">
+</div>
+</div>
+
+<!-- Hisobim Tab -->
+<div class="section hidden" id="accountTab">
+<h3>Hisobim</h3>
+<p>Ism: <span id="profName"></span></p>
+<p>Familiya: <span id="profSurname"></span></p>
+<p>Telefon: <span id="profPhone"></span></p>
+<p>Gmail: <span id="profEmail"></span></p>
+<p>Balans: <span id="userBalance">0</span> so'm</p>
+
+<hr>
+<h4>Stars qo‘shish (Pul solish)</h4>
+<input id="depositAmount" type="number" placeholder="Miqqdori (min 4000)">
+<input id="depositCard" type="text" placeholder="Karta raqami">
+<button onclick="requestDeposit()">Pul solish</button>
+<p id="depositStatus"></p>
+
+<hr>
+<h4>Pul chiqarish</h4>
+<input id="withdrawAmount" type="number" placeholder="Summa (min 20000)">
+<input id="withdrawCard" type="text" placeholder="Karta raqami">
+<button onclick="requestWithdraw()">Chiqarish</button>
+<p id="withdrawStatus"></p>
+
+<hr>
+<h4>Sozlamalar</h4>
+<button onclick="editProfile()">Malumotlarni o‘zgartirish</button>
+<button onclick="logout()">Akkountdan chiqish</button>
+</div>
+
+<!-- Bottom Tabs -->
+<div class="tabs hidden">
+<button class="active" data-tab="gameTab">Game</button>
+<button data-tab="rulesTab">Qoidalar</button>
+<button data-tab="accountTab">Hisobim</button>
+</div>
+
+<!-- Admin DEMO -->
+<div class="card hidden" id="adminPanel">
+<h3>Admin – Pul tushishi va chiqarish so‘rovi (DEMO)</h3>
+<button onclick="checkDeposit()">Deposit so‘rovini ko‘rish</button>
+<div id="adminDeposit"></div>
+<hr>
+<button onclick="checkWithdraw()">Withdraw so‘rovini ko‘rish</button>
+<div id="adminWithdraw"></div>
+</div>
+
+<script>
+function hash(text){return btoa(unescape(encodeURIComponent(text)));}
+const ADMIN_EMAIL='pubgmobile20120110@gmail.com';
+const ADMIN_PASS='20121024';
+
+// Switch login/register
+document.getElementById('loginBtn').addEventListener('click', login);
+document.getElementById('regBtn').addEventListener('click', register);
+document.getElementById('toRegister').addEventListener('click', ()=>{loginCard.classList.add('hidden');registerCard.classList.remove('hidden');});
+document.getElementById('toLogin').addEventListener('click', ()=>{registerCard.classList.add('hidden');loginCard.classList.remove('hidden');});
+
+// Tabs
+const tabs=document.querySelectorAll('.tabs button');
+tabs.forEach(tab=>tab.addEventListener('click',()=>{
+  tabs.forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.tab-content .section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(tab.dataset.tab).classList.remove('hidden');
+}));
+
+// Register
+function register(){
+  if(!regEmail.value||!regPassword.value){alert('Hamma joyni to\'ldir');return;}
+  const user={name:regName.value,surname:regSurname.value,phone:regPhone.value,email:regEmail.value,password:hash(regPassword.value),balance:0};
+  localStorage.setItem('user',JSON.stringify(user));
+  alert('Ro\'yxatdan o\'tildi!');
+  registerCard.classList.add('hidden');loginCard.classList.remove('hidden');
+}
+
+// Login
+function login(){
+  const saved=JSON.parse(localStorage.getItem('user'));
+  
+  // Admin
+  if(loginEmail.value===ADMIN_EMAIL && loginPassword.value===ADMIN_PASS){
+    document.getElementById('adminPanel').classList.remove('hidden');
+    loginCard.classList.add('hidden');
+    registerCard.classList.add('hidden');
+    document.getElementById('userPanel').classList.add('hidden');
+    document.querySelector('.tabs').classList.add('hidden');
+    return;
+  }
+
+  // User
+  if(!saved){alert('Avval ro\'yxatdan o\'ting');return;}
+  if(loginEmail.value===saved.email && hash(loginPassword.value)===saved.password){
+    showUserPanel(saved);
+  } else {alert('Gmail yoki parol noto‘g‘ri');}
+}
+
+function showUserPanel(user){
+  loginCard.classList.add('hidden');
+  registerCard.classList.add('hidden');
+  document.getElementById('userPanel').classList.remove('hidden');
+  document.querySelector('.tabs').classList.remove('hidden');
+  document.getElementById('userName').innerText=user.name;
+  document.getElementById('profName').innerText=user.name;
+  document.getElementById('profSurname').innerText=user.surname;
+  document.getElementById('profPhone').innerText=user.phone;
+  document.getElementById('profEmail').innerText=user.email;
+  document.getElementById('userBalance').innerText=user.balance;
+}
+
+// Animated Game
+function playAnimatedGame(game){
+  const saved=JSON.parse(localStorage.getItem('user'));
+  if(saved.balance<4000){alert('Balans yetarli emas'); return;}
+  saved.balance-=4000;
+  document.getElementById('userBalance').innerText=saved.balance;
+  const slotResult=document.getElementById('slotResult');
+  slotResult.innerHTML="O‘yin boshlanmoqda...";
+  setTimeout(()=>{
+    const rand=Math.random()*100;
+    let prize=0;
+    if(rand<1){prize=20000;}
+    else if(rand<4){prize=10000;}
+    else if(rand<14){prize=4000;}
+    else if(rand<64){prize=1000;}
+    else{prize=0;}
+    saved.balance+=prize;
+    localStorage.setItem('user',JSON.stringify(saved));
+    document.getElementById('userBalance').innerText=saved.balance;
+    slotResult.innerHTML=`${game} o‘yinida yutuq: <b>${prize} so'm</b>`;
+  },1000);
+}
+
+// Withdraw/Deposit Demo
+function requestWithdraw(){
+  const amount=parseInt(document.getElementById('withdrawAmount').value);
+  const card=document.getElementById('withdrawCard').value;
+  const user=JSON.parse(localStorage.getItem('user'));
+  if(!amount||!card){alert("Hamma maydonni to‘ldiring");return;}
+  if(amount<20000){alert("Minimal 20000 so'm");return;}
+  if(user.balance<amount){alert("Balans yetarli emas");return;}
+  const withdrawRequest={email:user.email,name:user.name,amount:amount,card:card,status:"Kutilmoqda"};
+  localStorage.setItem("withdrawRequest",JSON.stringify(withdrawRequest));
+  document.getElementById("withdrawStatus").innerText="So‘rov yuborildi, admin tekshiradi";
+}
+
+function requestDeposit(){
+  const amount=parseInt(document.getElementById('depositAmount').value);
+  const card=document.getElementById('depositCard').value;
+  const user=JSON.parse(localStorage.getItem('user'));
+  if(!amount||!card){alert("Hamma maydonni to‘ldiring");return;}
+  if(amount<4000){alert("Minimal 4000 so'm");return;}
+  const depositRequest={email:user.email,name:user.name,amount:amount,card:card,status:"Kutilmoqda",time:new Date().toLocaleString()};
+  localStorage.setItem("depositRequest",JSON.stringify(depositRequest));
+  document.getElementById("depositStatus").innerText="So‘rov yuborildi, admin tekshiradi ("+depositRequest.time+")";
+}
+
+// Admin DEMO functions
+function checkDeposit(){
+  const req=JSON.parse(localStorage.getItem("depositRequest"));
+  if(!req){alert("So‘rov yo‘q");return;}
+  document.getElementById("adminDeposit").innerHTML=`
+    <p>Foydalanuvchi: ${req.name}</p>
+    <p>Email: ${req.email}</p>
+    <p>Summa: ${req.amount} so'm</p>
+    <p>Karta: ${req.card}</p>
+    <p>Vaqt: ${req.time}</p>
+    <button onclick="approveDeposit()">Tasdiqlash</button>
+  `;
+}
+
+function approveDeposit(){
+  const req=JSON.parse(localStorage.getItem("depositRequest"));
+  const user=JSON.parse(localStorage.getItem('user'));
+  user.balance+=req.amount;
+  localStorage.setItem("user",JSON.stringify(user));
+  localStorage.removeItem("depositRequest");
+  alert("Pul hisobga tushdi (DEMO)");
+}
+
+function checkWithdraw(){
+  const req=JSON.parse(localStorage.getItem("withdrawRequest"));
+  if(!req){alert("So‘rov yo‘q");return;}
+  document.getElementById("adminWithdraw").innerHTML=`
+    <p>Foydalanuvchi: ${req.name}</p>
+    <p>Email: ${req.email}</p>
+    <p>Summa: ${req.amount} so'm</p>
+    <p>Karta: ${req.card}</p>
+    <button onclick="approveWithdraw()">To‘lov qilindi</button>
+  `;
+}
+
+function approveWithdraw(){
+  const req=JSON.parse(localStorage.getItem("withdrawRequest"));
+  const user=JSON.parse(localStorage.getItem('user'));
+  user.balance-=req.amount;
+  localStorage.setItem("user",JSON.stringify(user));
+  localStorage.removeItem("withdrawRequest");
+  alert("To‘lov tasdiqlandi (DEMO)");
+}
+
+// Settings & logout
+function editProfile(){
+  const user=JSON.parse(localStorage.getItem('user'));
+  const newName=prompt("Ism:",user.name);
+  const newSurname=prompt("Familiya:",user.surname);
+  const newPhone=prompt("Telefon:",user.phone);
+  if(newName) user.name=newName;
+  if(newSurname) user.surname=newSurname;
+  if(newPhone) user.phone=newPhone;
+  localStorage.setItem('user',JSON.stringify(user));
+  showUserPanel(user);
+}
+
+function logout(){alert("Akkountdan chiqildi");location.reload();}
+</script>
+</body>
+</html>
