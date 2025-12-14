@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>1000XBEK.UZ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#fff}
+header{padding:15px;text-align:center;background:#020617;font-size:22px;font-weight:bold}
+.card{background:#1e293b;margin:15px;padding:15px;border-radius:12px}
+input,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:none}
+button{background:#38bdf8;color:#000;font-weight:bold}
+.menu{position:fixed;bottom:0;left:0;width:100%;display:flex}
+.menu button{flex:1;border-radius:0}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header>1000XBEK.UZ</header>
+
+<div class="card" id="login">
+<h3>Kirish</h3>
+<input id="email" placeholder="Gmail">
+<input id="pass" type="password" placeholder="Parol">
+<button onclick="login()">Kirish</button>
+</div>
+
+<div class="card hidden" id="panel">
+<h3>Hisobim</h3>
+<p>Balans: <b id="bal">0</b> so'm</p>
+</div>
+
+<div class="menu hidden" id="menu">
+<button onclick="show('panel')">Hisobim</button>
+</div>
+
+<script>
+function login(){
+ document.getElementById('login').classList.add('hidden');
+ document.getElementById('panel').classList.remove('hidden');
+ document.getElementById('menu').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
