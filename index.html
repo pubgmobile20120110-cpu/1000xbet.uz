@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMSRUTKA - Mukammal Do'kon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --secondary-text: #94a3b8;
+            --accent: #38bdf8;
+            --green: #22c55e;
+            --border: rgba(255, 255, 255, 0.1);
+            --price-bg: rgba(34, 197, 94, 0.12);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --secondary-text: #64748b;
+            --accent: #0284c7;
+            --green: #15803d;
+            --border: rgba(0, 0, 0, 0.05);
+            --price-bg: rgba(22, 163, 74, 0.08);
+        }
+
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body { background-color: var(--bg); color: var(--text); padding: 15px 15px 100px; }
+
+        header {
+            max-width: 480px; margin: 0 auto 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo { font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: -1px; }
+
+        .theme-btn {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 8px 15px; border-radius: 12px; color: var(--text);
+            cursor: pointer; font-size: 13px; font-weight: 700;
+        }
+
+        .tabs { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 20px; }
+        .tab {
+            flex: 1; padding: 14px; background: var(--card-bg);
+            border-radius: 18px; text-align: center; font-size: 13px;
+            font-weight: 800; cursor: pointer; border: 2px solid transparent;
+        }
+        .tab.active { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
+
+        .container { max-width: 480px; margin: 0 auto; }
+        .list { display: none; flex-direction: column; gap: 10px; }
+        .list.active { display: flex; }
+
+        .item {
+            background: var(--card-bg); padding: 14px 16px;
+            border-radius: 18px; display: flex; justify-content: space-between;
+            align-items: center; text-decoration: none; color: inherit;
+            border: 1px solid var(--border);
+        }
+        .item:active { transform: scale(0.97); }
+
+        .item-left { display: flex; align-items: center; gap: 12px; }
+        .flag-img {
+            width: 38px; height: 26px; object-fit: cover;
+            border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .info { display: flex; flex-direction: column; }
+        .name { font-weight: 800; font-size: 15px; }
+        .code-label { font-size: 11px; color: var(--secondary-text); }
+
+        .price-tag {
+            background: var(--price-bg);
+            padding: 6px 12px; border-radius: 10px;
+            text-align: right; border: 1px solid rgba(34, 197, 94, 0.15);
+        }
+        .price { font-weight: 800; color: var(--green); font-size: 14px; }
+
+        /* LIVE NOTIFICATION */
+        .live-sale {
+            position: fixed; bottom: -100px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            border: 1px solid var(--accent);
+            color: var(--text); padding: 12px 18px;
+            border-radius: 50px; font-size: 12px; font-weight: 700;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            z-index: 9999;
+            display: flex; align-items: center; gap: 10px;
+            width: 90%; max-width: 400px;
+        }
+        .live-sale.show { bottom: 25px; }
+        .pulse-dot { width: 8px; height: 8px; background: #ff3b30; border-radius: 50%; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        footer { text-align: center; margin-top: 40px; font-size: 10px; color: var(--secondary-text); letter-spacing: 2px; text-transform: uppercase; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <header>
+        <div class="logo">SMSRUTKA</div>
+        <button class="theme-btn" onclick="toggleTheme()" id="t-btn">☀️ Light</button>
+    </header>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('top')">🏆 TOP 10</div>
+        <div class="tab" onclick="switchTab('arzon')">📉 ARZON</div>
+    </div>
+
+    <div class="container">
+        <div id="top-list" class="list active"></div>
+        <div id="arzon-list" class="list"></div>
+    </div>
+
+    <div class="live-sale" id="sale-notif">
+        <div class="pulse-dot"></div>
+        <span id="notif-text"></span>
+    </div>
+
+    <footer>High-Speed SMS Activation</footer>
+
+    <script>
+        // TOP 10 DAVLATLAR
+        const top10 = [
+            { iso: "ca", n: "Kanada", c: "+1", p: "6,283.2" },
+            { iso: "md", n: "Moldova", c: "+373", p: "18,849.6" },
+            { iso: "gt", n: "Gvatemala", c: "+502", p: "15,708.0" },
+            { iso: "so", n: "Somali", c: "+252", p: "15,708.0" },
+            { iso: "no", n: "Norvegiya", c: "+47", p: "39,270.0" },
+            { iso: "td", n: "Chad", c: "+235", p: "15,708.0" },
+            { iso: "km", n: "Komor orollari", c: "+269", p: "14,137.2" },
+            { iso: "bz", n: "Beliz", c: "+501", p: "20,420.4" },
+            { iso: "ls", n: "Lesoto", c: "+266", p: "15,708.0" },
+            { iso: "tt", n: "Trinidad & Tobago", c: "+1", p: "9,424.8" }
+        ];
+
+        // ARZON DAVLATLAR (Eng past narxlar)
+        const arzon10 = [
+            { iso: "bd", n: "Bangladesh", c: "+880", p: "5,497.8" },
+            { iso: "ke", n: "Keniya", c: "+254", p: "6,283.2" },
+            { iso: "pk", n: "Pokiston", c: "+92", p: "6,283.2" },
+            { iso: "dz", n: "Jazoir", c: "+213", p: "7,068.6" },
+            { iso: "np", n: "Nepal", c: "+977", p: "7,068.6" },
+            { iso: "id", n: "Indoneziya", c: "+62", p: "7,068.6" },
+            { iso: "vn", n: "Vyetnam", c: "+84", p: "7,068.6" },
+            { iso: "mz", n: "Mozambik", c: "+258", p: "7,068.6" },
+            { iso: "in", n: "Hindiston", c: "+91", p: "7,068.6" },
+            { iso: "ph", n: "Filippin", c: "+63", p: "7,854.0" }
+        ];
+
+        const allCountries = [...top10, ...arzon10];
+
+        function render(data, id) {
+            const el = document.getElementById(id);
+            el.innerHTML = data.map(i => `
+                <a href="https://t.me/smsrutkabot?start=buy_${i.iso}" class="item">
+                    <div class="item-left">
+                        <img src="https://flagcdn.com/w80/${i.iso}.png" class="flag-img" loading="lazy">
+                        <div class="info">
+                            <span class="name">${i.n}</span>
+                            <span class="code-label">${i.c} prefiks</span>
+                        </div>
+                    </div>
+                    <div class="price-tag">
+                        <span class="price">${i.p} so'm</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // AQLLI JONLI BILDIRISHNOMA (Har 20 soniyada)
+        const notif = document.getElementById('sale-notif');
+        const notifText = document.getElementById('notif-text');
+
+        function showNotification() {
+            const randomItem = allCountries[Math.floor(Math.random() * allCountries.length)];
+            const randomID = Math.floor(1000 + Math.random() * 9000); 
+            const fakeNumber = `${randomItem.c} *** ${randomID}`;
+
+            notifText.innerHTML = `<b style="color:var(--accent)">${fakeNumber}</b> hozirgina <b style="color:var(--green)">${randomItem.n}</b> sotib oldi!`;
+            notif.classList.add('show');
+
+            setTimeout(() => { notif.classList.remove('show'); }, 6000);
+        }
+
+        setTimeout(showNotification, 4000);
+        setInterval(showNotification, 20000);
+
+        function switchTab(t) {
+            document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.list').forEach(x => x.classList.remove('active'));
+            if(t === 'top') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('top-list').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('arzon-list').classList.add('active');
+            }
+        }
+
+        function toggleTheme() {
+            const b = document.body;
+            const isD = b.getAttribute('data-theme') === 'dark';
+            b.setAttribute('data-theme', isD ? 'light' : 'dark');
+            document.getElementById('t-btn').innerHTML = isD ? '🌙 Dark' : '☀️ Light';
+        }
+
+        render(top10, 'top-list');
+        render(arzon10, 'arzon-list');
+    </script>
+</body>
+</html>
